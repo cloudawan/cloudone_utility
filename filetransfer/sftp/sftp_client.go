@@ -46,7 +46,7 @@ func DownLoadDirectoryRecurrsively(hostAndPort string, username string,
 	defer client.Close()
 
 	// walk a directory
-	walk := client.Walk("/home/cloudawan/test_sftp")
+	walk := client.Walk(remoteSourceDirectory)
 	for walk.Step() {
 		if err := walk.Err(); err != nil {
 			return err
