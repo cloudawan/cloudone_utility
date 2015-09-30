@@ -67,7 +67,7 @@ type BulkProcessor struct {
 // WARNING: Due to goelstic's hard code channel size, if the buffered document amount reach 100, it will get stuck
 func (bulkProcessor *BulkProcessor) BufferIndex(
 	index string, _type string, id string, jsonMap map[string]interface{}) error {
-	return bulkProcessor.bulkIndexer.Index(index, _type, id, "", nil, jsonMap, false)
+	return bulkProcessor.bulkIndexer.Index(index, _type, id, "", "", nil, jsonMap)
 }
 
 func (bulkProcessor *BulkProcessor) FlushAndStopBulkProcessor() {
