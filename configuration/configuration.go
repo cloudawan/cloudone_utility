@@ -15,9 +15,9 @@
 package configuration
 
 import (
-	"code.google.com/p/log4go"
 	"encoding/json"
-	"github.com/cloudawan/kubernetes_management_utility/logger"
+	"github.com/cloudawan/kubernetes_management_utility/configuration/Godeps/_workspace/src/code.google.com/p/log4go"
+	"github.com/cloudawan/kubernetes_management_utility/configuration/Godeps/_workspace/src/github.com/cloudawan/kubernetes_management_utility/logger"
 	"io"
 	"os"
 )
