@@ -26,16 +26,52 @@ const (
 )
 
 type Log struct {
-	loggerMap     map[string]log4go.Logger
+	logger log4go.Logger
+}
+
+func (log Log) Critical(args ...interface{}) error {
+	return log.logger.Critical(args)
+}
+
+func (log Log) Debug(args ...interface{}) {
+	log.logger.Debug(args)
+}
+
+func (log Log) Error(args ...interface{}) error {
+	return log.logger.Error(args)
+}
+
+func (log Log) Fine(args ...interface{}) {
+	log.logger.Fine(args)
+}
+
+func (log Log) Finest(args ...interface{}) {
+	log.logger.Finest(args)
+}
+
+func (log Log) Info(args ...interface{}) {
+	log.logger.Info(args)
+}
+
+func (log Log) Trace(args ...interface{}) {
+	log.logger.Trace(args)
+}
+
+func (log Log) Warn(args ...interface{}) error {
+	return log.logger.Warn(args)
+}
+
+type LogManager struct {
+	logMap        map[string]Log
 	directoryPath string
 }
 
-func CreateLog(programName string) (*Log, error) {
+func CreateLogManager(programName string) (*LogManager, error) {
 	directoryPath, err := createDirectoryIfNotExist(programName)
 	if err != nil {
 		return nil, err
 	}
-	return &Log{make(map[string]log4go.Logger), directoryPath}, nil
+	return &LogManager{make(map[string]Log), directoryPath}, nil
 }
 
 func createDirectoryIfNotExist(programName string) (string, error) {
@@ -43,18 +79,18 @@ func createDirectoryIfNotExist(programName string) (string, error) {
 	return directoryPath, os.MkdirAll(directoryPath, os.ModePerm)
 }
 
-func (log *Log) GetLogger(moduleName string) log4go.Logger {
-	filePath := log.directoryPath + string(os.PathSeparator) + moduleName + logSuffix
-	return log.getLoggerWithFileName(filePath)
+func (logManager *LogManager) GetLog(moduleName string) Log {
+	filePath := logManager.directoryPath + string(os.PathSeparator) + moduleName + logSuffix
+	return logManager.getLogWithFileName(filePath)
 }
 
-func (log *Log) getLoggerWithFileName(filePath string) log4go.Logger {
-	logger, ok := log.loggerMap[filePath]
+func (logManager *LogManager) getLogWithFileName(filePath string) Log {
+	log, ok := logManager.logMap[filePath]
 	if ok {
-		return logger
+		return log
 	} else {
 		// Create the empty logger
-		logger = make(log4go.Logger)
+		logger := make(log4go.Logger)
 		fileWriter := log4go.NewFileLogWriter(filePath, false)
 		fileWriter.SetFormat("[%D %T] [%L] (%S) %M")
 		fileWriter.SetRotate(false)
@@ -63,24 +99,25 @@ func (log *Log) getLoggerWithFileName(filePath string) log4go.Logger {
 		fileWriter.SetRotateDaily(false)
 		logger.AddFilter("file", log4go.DEBUG, fileWriter)
 
-		log.loggerMap[filePath] = logger
-		return logger
+		log = Log{logger}
+		logManager.logMap[filePath] = log
+		return log
 	}
 }
 
 // Self logger
-var log *Log
+var logManager *LogManager
 
 func init() {
 	var err error
-	log, err = CreateLog("kubernetes_management_utility")
+	logManager, err = CreateLogManager("kubernetes_management_utility")
 	if err != nil {
 		panic(err)
 	}
 }
 
-func GetLogger(moduleName string) log4go.Logger {
-	return log.GetLogger(moduleName)
+func GetLog(moduleName string) Log {
+	return logManager.GetLog(moduleName)
 }
 
 func GetStackTrace(maxByteAmount int, allRoutines bool) string {

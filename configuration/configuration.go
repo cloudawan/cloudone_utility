@@ -15,14 +15,13 @@
 package configuration
 
 import (
-	"code.google.com/p/log4go"
 	"encoding/json"
 	"github.com/cloudawan/kubernetes_management_utility/logger"
 	"io"
 	"os"
 )
 
-var log log4go.Logger = logger.GetLogger("utility")
+var log logger.Log = logger.GetLog("utility")
 
 const (
 	rootPath = "/etc"

@@ -15,14 +15,13 @@
 package elasticsearch
 
 import (
-	"code.google.com/p/log4go"
 	"encoding/json"
-	"github.com/cloudawan/kubernetes_management/utility/logger"
+	"github.com/cloudawan/kubernetes_management_utility/logger"
 	elastigo "github.com/mattbaird/elastigo/lib"
 	"strconv"
 )
 
-var log log4go.Logger = logger.GetLogger("utility")
+var log = logger.GetLog("utility")
 
 type ElasticSearchClient struct {
 	connection *elastigo.Conn
