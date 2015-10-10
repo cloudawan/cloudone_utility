@@ -25,44 +25,8 @@ const (
 	logSuffix = ".log"
 )
 
-type Log struct {
-	logger log4go.Logger
-}
-
-func (log Log) Critical(args ...interface{}) error {
-	return log.logger.Critical(args)
-}
-
-func (log Log) Debug(args ...interface{}) {
-	log.logger.Debug(args)
-}
-
-func (log Log) Error(args ...interface{}) error {
-	return log.logger.Error(args)
-}
-
-func (log Log) Fine(args ...interface{}) {
-	log.logger.Fine(args)
-}
-
-func (log Log) Finest(args ...interface{}) {
-	log.logger.Finest(args)
-}
-
-func (log Log) Info(args ...interface{}) {
-	log.logger.Info(args)
-}
-
-func (log Log) Trace(args ...interface{}) {
-	log.logger.Trace(args)
-}
-
-func (log Log) Warn(args ...interface{}) error {
-	return log.logger.Warn(args)
-}
-
 type LogManager struct {
-	logMap        map[string]Log
+	loggerMap     map[string]log4go.Logger
 	directoryPath string
 }
 
@@ -71,7 +35,7 @@ func CreateLogManager(programName string) (*LogManager, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &LogManager{make(map[string]Log), directoryPath}, nil
+	return &LogManager{make(map[string]log4go.Logger), directoryPath}, nil
 }
 
 func createDirectoryIfNotExist(programName string) (string, error) {
@@ -79,15 +43,15 @@ func createDirectoryIfNotExist(programName string) (string, error) {
 	return directoryPath, os.MkdirAll(directoryPath, os.ModePerm)
 }
 
-func (logManager *LogManager) GetLog(moduleName string) Log {
+func (logManager *LogManager) GetLogger(moduleName string) log4go.Logger {
 	filePath := logManager.directoryPath + string(os.PathSeparator) + moduleName + logSuffix
 	return logManager.getLogWithFileName(filePath)
 }
 
-func (logManager *LogManager) getLogWithFileName(filePath string) Log {
-	log, ok := logManager.logMap[filePath]
+func (logManager *LogManager) getLogWithFileName(filePath string) log4go.Logger {
+	logger, ok := logManager.loggerMap[filePath]
 	if ok {
-		return log
+		return logger
 	} else {
 		// Create the empty logger
 		logger := make(log4go.Logger)
@@ -99,9 +63,8 @@ func (logManager *LogManager) getLogWithFileName(filePath string) Log {
 		fileWriter.SetRotateDaily(false)
 		logger.AddFilter("file", log4go.DEBUG, fileWriter)
 
-		log = Log{logger}
-		logManager.logMap[filePath] = log
-		return log
+		logManager.loggerMap[filePath] = logger
+		return logger
 	}
 }
 
@@ -116,10 +79,11 @@ func init() {
 	}
 }
 
-func GetLog(moduleName string) Log {
-	return logManager.GetLog(moduleName)
+func GetLog(moduleName string) log4go.Logger {
+	return logManager.GetLogger(moduleName)
 }
 
+// Stack trace
 func GetStackTrace(maxByteAmount int, allRoutines bool) string {
 	trace := make([]byte, maxByteAmount)
 	count := runtime.Stack(trace, allRoutines)

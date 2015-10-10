@@ -21,7 +21,7 @@ import (
 	"os"
 )
 
-var log logger.Log = logger.GetLog("utility")
+var log = logger.GetLog("utility")
 
 const (
 	rootPath = "/etc"
