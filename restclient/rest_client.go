@@ -78,30 +78,26 @@ func Request(method string, url string, body interface{},
 				if err != nil {
 					return 500, nil, err
 				} else {
-					if response.StatusCode == 404 {
-						return 404, nil, nil
-					} else {
-						var jsonMap interface{}
-						if useJsonNumberInsteadFloat64ForResultJson {
-							decoder := json.NewDecoder(bytes.NewReader(responseBody))
-							decoder.UseNumber()
-							err := decoder.Decode(&jsonMap)
-							if err != nil {
-								jsonMap = make(map[string]interface{})
-								jsonMap.(map[string]interface{})["body"] = string(responseBody)
-								return response.StatusCode, jsonMap, err
-							} else {
-								return response.StatusCode, jsonMap, nil
-							}
+					var jsonMap interface{}
+					if useJsonNumberInsteadFloat64ForResultJson {
+						decoder := json.NewDecoder(bytes.NewReader(responseBody))
+						decoder.UseNumber()
+						err := decoder.Decode(&jsonMap)
+						if err != nil {
+							jsonMap = make(map[string]interface{})
+							jsonMap.(map[string]interface{})["body"] = string(responseBody)
+							return response.StatusCode, jsonMap, err
 						} else {
-							err := json.Unmarshal(responseBody, &jsonMap)
-							if err != nil {
-								jsonMap = make(map[string]interface{})
-								jsonMap.(map[string]interface{})["body"] = string(responseBody)
-								return response.StatusCode, jsonMap, err
-							} else {
-								return response.StatusCode, jsonMap, nil
-							}
+							return response.StatusCode, jsonMap, nil
+						}
+					} else {
+						err := json.Unmarshal(responseBody, &jsonMap)
+						if err != nil {
+							jsonMap = make(map[string]interface{})
+							jsonMap.(map[string]interface{})["body"] = string(responseBody)
+							return response.StatusCode, jsonMap, err
+						} else {
+							return response.StatusCode, jsonMap, nil
 						}
 					}
 				}
@@ -219,8 +215,12 @@ func RequestWithStructure(method string, url string, body interface{}, returnedS
 func RequestGetWithStructure(url string, returnedStrucutre interface{}) (interface{}, error) {
 	statusCode, data, err, responseBody := RequestWithStructure("GET", url, nil, returnedStrucutre)
 	if err != nil {
+		body := ""
+		if responseBody != nil {
+			body = *responseBody
+		}
 		return data, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" Body: " + *responseBody + " url: " + url)
+			" Body: " + body + " url: " + url)
 	} else if statusCode == 200 || statusCode == 204 {
 		return data, nil
 	} else {
@@ -236,8 +236,12 @@ func RequestGetWithStructure(url string, returnedStrucutre interface{}) (interfa
 func RequestPostWithStructure(url string, body interface{}, returnedStrucutre interface{}) (interface{}, error) {
 	statusCode, data, err, responseBody := RequestWithStructure("POST", url, body, returnedStrucutre)
 	if err != nil {
+		body := ""
+		if responseBody != nil {
+			body = *responseBody
+		}
 		return data, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" Body: " + *responseBody + " url: " + url)
+			" Body: " + body + " url: " + url)
 	} else if statusCode == 200 || statusCode == 201 || statusCode == 202 {
 		return data, nil
 	} else {
@@ -253,8 +257,12 @@ func RequestPostWithStructure(url string, body interface{}, returnedStrucutre in
 func RequestPutWithStructure(url string, body interface{}, returnedStrucutre interface{}) (interface{}, error) {
 	statusCode, data, err, responseBody := RequestWithStructure("PUT", url, body, returnedStrucutre)
 	if err != nil {
+		body := ""
+		if responseBody != nil {
+			body = *responseBody
+		}
 		return data, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" Body: " + *responseBody + " url: " + url)
+			" Body: " + body + " url: " + url)
 	} else if statusCode == 200 || statusCode == 202 || statusCode == 204 {
 		return data, nil
 	} else {
@@ -270,8 +278,12 @@ func RequestPutWithStructure(url string, body interface{}, returnedStrucutre int
 func RequestDeleteWithStructure(url string, body interface{}, returnedStrucutre interface{}) (interface{}, error) {
 	statusCode, data, err, responseBody := RequestWithStructure("DELETE", url, body, returnedStrucutre)
 	if err != nil {
+		body := ""
+		if responseBody != nil {
+			body = *responseBody
+		}
 		return data, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" Body: " + *responseBody + " url: " + url)
+			" Body: " + body + " url: " + url)
 	} else if statusCode == 200 || statusCode == 202 || statusCode == 204 {
 		return data, nil
 	} else {
