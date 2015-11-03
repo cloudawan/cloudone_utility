@@ -16,7 +16,7 @@ package elasticsearch
 
 import (
 	"encoding/json"
-	"github.com/cloudawan/kubernetes_management_utility/logger"
+	"github.com/cloudawan/cloudone_utility/logger"
 	elastigo "github.com/mattbaird/elastigo/lib"
 	"strconv"
 )

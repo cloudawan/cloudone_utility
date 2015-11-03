@@ -15,7 +15,7 @@
 package cassandra
 
 import (
-	"github.com/cloudawan/kubernetes_management_utility/logger"
+	"github.com/cloudawan/cloudone_utility/logger"
 	"github.com/gocql/gocql"
 	"time"
 )

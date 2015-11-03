@@ -73,7 +73,7 @@ var logManager *LogManager
 
 func init() {
 	var err error
-	logManager, err = CreateLogManager("kubernetes_management_utility")
+	logManager, err = CreateLogManager("cloudone_utility")
 	if err != nil {
 		panic(err)
 	}
