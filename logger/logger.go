@@ -15,7 +15,7 @@
 package logger
 
 import (
-	"code.google.com/p/log4go"
+	"github.com/alecthomas/log4go"
 	"os"
 	"runtime"
 )
