@@ -28,43 +28,53 @@ type CassandraClient struct {
 	clusterPort         int
 	keyspace            string
 	replicationStrategy string
+	timeout             time.Duration
 }
 
 func CreateCassandraClient(clusterIp []string, clusterPort int,
-	keyspace string, replicationStrategy string) *CassandraClient {
-	cassandraClient := &CassandraClient{nil, clusterIp, clusterPort, keyspace, replicationStrategy}
+	keyspace string, replicationStrategy string, timeout time.Duration) *CassandraClient {
+	cassandraClient := &CassandraClient{nil, clusterIp, clusterPort, keyspace, replicationStrategy, timeout}
 	cassandraClient.GetSession()
 	return cassandraClient
 }
 
-func (cassandraClient *CassandraClient) GetSession() *gocql.Session {
-	if cassandraClient.session != nil {
-		return cassandraClient.session
-	} else {
+func (cassandraClient *CassandraClient) GetSession() (returnedSession *gocql.Session, returnedError error) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error("GetSession Error: %s", err)
+			log.Error(logger.GetStackTrace(4096, false))
+			returnedSession = nil
+			returnedError = err.(error)
+		}
+	}()
 
+	if cassandraClient.session != nil {
+		return cassandraClient.session, nil
+	} else {
 		cluster := gocql.NewCluster(cassandraClient.clusterIp...)
+		cluster.Timeout = cassandraClient.timeout
 		cluster.Port = cassandraClient.clusterPort
 		session, err := cluster.CreateSession()
 		if err != nil {
 			log.Critical("Fail to create Cassandra session: %s", err)
-			session = nil
-			return nil
+			cassandraClient.session = nil
+			return nil, err
 		} else {
 			if err := session.Query("CREATE KEYSPACE IF NOT EXISTS " + cassandraClient.keyspace + " WITH replication = " + cassandraClient.replicationStrategy).Exec(); err != nil {
 				log.Critical("Fail to check if not exist then create keyspace error: %s", err)
-				session = nil
-				return nil
+				cassandraClient.session = nil
+				return nil, err
 			} else {
 				session.Close()
 				cluster.Keyspace = cassandraClient.keyspace
 				session, err := cluster.CreateSession()
 				if err != nil {
 					log.Critical("Fail to create Cassandra session: %s", err)
-					session = nil
-					return nil
+					cassandraClient.session = nil
+					return nil, err
 				} else {
 					cassandraClient.session = session
-					return cassandraClient.session
+					return cassandraClient.session, nil
 				}
 			}
 		}
@@ -81,9 +91,20 @@ func (cassandraClient *CassandraClient) ReloadConfiguration() {
 	cassandraClient.GetSession()
 }
 
-func (cassandraClient *CassandraClient) CreateTableIfNotExist(tableSchema string, retryAmount int, retryInterval time.Duration) error {
-	session := cassandraClient.GetSession()
-	var returnedError error = nil
+func (cassandraClient *CassandraClient) CreateTableIfNotExist(tableSchema string, retryAmount int, retryInterval time.Duration) (returnedError error) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error("CreateTableIfNotExist Error: %s", err)
+			log.Error(logger.GetStackTrace(4096, false))
+			returnedError = err.(error)
+		}
+	}()
+
+	session, err := cassandraClient.GetSession()
+	if err != nil {
+		return err
+	}
+
 	for i := 0; i < retryAmount; i++ {
 		if err := session.Query(tableSchema).Exec(); err == nil {
 			return nil
