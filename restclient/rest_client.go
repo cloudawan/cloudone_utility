@@ -110,7 +110,7 @@ func RequestGet(url string, useJsonNumberInsteadFloat64ForResultJson bool) (inte
 	statusCode, jsonMap, err := Request("GET", url, nil, useJsonNumberInsteadFloat64ForResultJson)
 	if err != nil {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url)
+			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 204 {
 		return jsonMap, nil
 	} else {
@@ -123,7 +123,7 @@ func RequestPost(url string, body interface{}, useJsonNumberInsteadFloat64ForRes
 	statusCode, jsonMap, err := Request("POST", url, body, useJsonNumberInsteadFloat64ForResultJson)
 	if err != nil {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url)
+			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 201 || statusCode == 202 {
 		return jsonMap, nil
 	} else {
@@ -136,7 +136,7 @@ func RequestPut(url string, body interface{}, useJsonNumberInsteadFloat64ForResu
 	statusCode, jsonMap, err := Request("PUT", url, body, useJsonNumberInsteadFloat64ForResultJson)
 	if err != nil {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url)
+			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 202 || statusCode == 204 {
 		return jsonMap, nil
 	} else {
@@ -149,7 +149,7 @@ func RequestDelete(url string, body interface{}, useJsonNumberInsteadFloat64ForR
 	statusCode, jsonMap, err := Request("DELETE", url, body, useJsonNumberInsteadFloat64ForResultJson)
 	if err != nil {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url)
+			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 202 || statusCode == 204 {
 		return jsonMap, nil
 	} else {
@@ -220,7 +220,7 @@ func RequestGetWithStructure(url string, returnedStrucutre interface{}) (interfa
 			body = *responseBody
 		}
 		return data, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" Body: " + body + " url: " + url)
+			" Body: " + body + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 204 {
 		return data, nil
 	} else {
@@ -241,7 +241,7 @@ func RequestPostWithStructure(url string, body interface{}, returnedStrucutre in
 			body = *responseBody
 		}
 		return data, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" Body: " + body + " url: " + url)
+			" Body: " + body + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 201 || statusCode == 202 {
 		return data, nil
 	} else {
@@ -262,7 +262,7 @@ func RequestPutWithStructure(url string, body interface{}, returnedStrucutre int
 			body = *responseBody
 		}
 		return data, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" Body: " + body + " url: " + url)
+			" Body: " + body + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 202 || statusCode == 204 {
 		return data, nil
 	} else {
@@ -283,7 +283,7 @@ func RequestDeleteWithStructure(url string, body interface{}, returnedStrucutre 
 			body = *responseBody
 		}
 		return data, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" Body: " + body + " url: " + url)
+			" Body: " + body + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 202 || statusCode == 204 {
 		return data, nil
 	} else {
@@ -337,7 +337,7 @@ func RequestGetByteSliceResult(url string) ([]byte, error) {
 	statusCode, byteSlice, err := RequestByteSliceResult("GET", url, nil)
 	if err != nil {
 		return byteSlice, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" byteSlice: " + fmt.Sprintf("%s", byteSlice) + " url: " + url)
+			" byteSlice: " + fmt.Sprintf("%s", byteSlice) + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 204 {
 		return byteSlice, nil
 	} else {
@@ -350,7 +350,7 @@ func RequestPostByteSliceResult(url string, body map[string]interface{}) ([]byte
 	statusCode, byteSlice, err := RequestByteSliceResult("POST", url, body)
 	if err != nil {
 		return byteSlice, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" byteSlice: " + fmt.Sprintf("%s", byteSlice) + " url: " + url)
+			" byteSlice: " + fmt.Sprintf("%s", byteSlice) + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 201 || statusCode == 202 {
 		return byteSlice, nil
 	} else {
@@ -363,7 +363,7 @@ func RequestPutByteSliceResult(url string, body map[string]interface{}) ([]byte,
 	statusCode, byteSlice, err := RequestByteSliceResult("PUT", url, body)
 	if err != nil {
 		return byteSlice, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" byteSlice: " + fmt.Sprintf("%s", byteSlice) + " url: " + url)
+			" byteSlice: " + fmt.Sprintf("%s", byteSlice) + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 202 || statusCode == 204 {
 		return byteSlice, nil
 	} else {
@@ -376,7 +376,7 @@ func RequestDeleteByteSliceResult(url string, body map[string]interface{}) ([]by
 	statusCode, byteSlice, err := RequestByteSliceResult("DELETE", url, body)
 	if err != nil {
 		return byteSlice, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" byteSlice: " + fmt.Sprintf("%s", byteSlice) + " url: " + url)
+			" byteSlice: " + fmt.Sprintf("%s", byteSlice) + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 202 || statusCode == 204 {
 		return byteSlice, nil
 	} else {
