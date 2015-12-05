@@ -15,18 +15,25 @@
 package restclient
 
 import (
-	"encoding/json"
+	//"encoding/json"
 	"fmt"
 	"testing"
+	"time"
 )
 
+func TestHealthCheck(t *testing.T) {
+	result, err := HealthCheck("http://192.168.0.31:8080", time.Second)
+	fmt.Println(result, err)
+}
+
+/*
 func TestRequestGet(t *testing.T) {
 	jsonMap, _ := RequestGet("http://172.16.0.113:8080/api/v1beta3/namespaces/default/replicationcontrollers/cassandra/", true)
 
 	fmt.Println(jsonMap.(map[string]interface{})["spec"].(map[string]interface{})["replicas"].(json.Number).Int64())
 }
 
-/*
+
 func TestRequestGet(t *testing.T) {
 	_, err := RequestGet("http://192.168.0.33:8080/api/v1beta3/namespaces/default/replicationcontrollers/nginx/")
 	if err == nil {

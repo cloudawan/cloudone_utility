@@ -23,6 +23,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 var insecureHTTPSClient *http.Client = nil
@@ -37,6 +38,34 @@ func GetInsecureHTTPSClient() *http.Client {
 		return insecureHTTPSClient
 	} else {
 		return insecureHTTPSClient
+	}
+}
+
+func HealthCheck(url string, timeout time.Duration) (returnedResult bool, returnedError error) {
+	defer func() {
+		if err := recover(); err != nil {
+			returnedResult = false
+			returnedError = err.(error)
+		}
+	}()
+
+	insecureHTTPSClient := &http.Client{Timeout: timeout}
+
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return false, err
+	}
+
+	response, err := insecureHTTPSClient.Do(request)
+	if err != nil {
+		return false, err
+	} else {
+		defer response.Body.Close()
+		if response.StatusCode == 200 || response.StatusCode == 204 {
+			return true, nil
+		} else {
+			return false, nil
+		}
 	}
 }
 
