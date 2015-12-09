@@ -28,7 +28,7 @@ func TestRequestGet(t *testing.T) {
 	// commandSlice = append(commandSlice, "sudo gluster volume create test replica 2 192.168.0.25:/data/glusterfs/test 192.168.0.26:/data/glusterfs/test force\n")
 	interactiveMap := make(map[string]string)
 	interactiveMap["[sudo]"] = "cloud4win\n"
-	resultSlice, err := InteractiveSSH(3*time.Second, "192.168.0.25", 22, "cloudawan", "cloud4win", commandSlice, interactiveMap)
+	resultSlice, err := InteractiveSSH(1*time.Second, 3*time.Second, "192.168.0.31", 22, "cloudawan", "cloud4win", commandSlice, interactiveMap)
 	fmt.Println(resultSlice)
 	fmt.Println(err)
 }

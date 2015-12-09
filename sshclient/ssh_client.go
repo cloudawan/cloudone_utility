@@ -19,13 +19,27 @@ import (
 	"errors"
 	"golang.org/x/crypto/ssh"
 	"io"
+	"net"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 )
 
-func InteractiveSSH(timeout time.Duration, host string, port int, user string, password string,
+// The function ssh.Dial doesn't have timeout mechanism for dial so this function is used
+func dialWithTimeout(network, addr string, config *ssh.ClientConfig, timeout time.Duration) (*ssh.Client, error) {
+	conn, err := net.DialTimeout(network, addr, timeout)
+	if err != nil {
+		return nil, err
+	}
+	c, chans, reqs, err := ssh.NewClientConn(conn, addr, config)
+	if err != nil {
+		return nil, err
+	}
+	return ssh.NewClient(c, chans, reqs), nil
+}
+
+func InteractiveSSH(dialTimeout time.Duration, sessionTimeout time.Duration, host string, port int, user string, password string,
 	commandSlice []string, interactiveMap map[string]string) ([]string, error) {
 	sshConfig := &ssh.ClientConfig{
 		User: user,
@@ -34,7 +48,7 @@ func InteractiveSSH(timeout time.Duration, host string, port int, user string, p
 		},
 	}
 
-	connection, err := ssh.Dial("tcp", host+":"+strconv.Itoa(port), sshConfig)
+	connection, err := dialWithTimeout("tcp", host+":"+strconv.Itoa(port), sshConfig, dialTimeout)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +89,7 @@ func InteractiveSSH(timeout time.Duration, host string, port int, user string, p
 	isTimeout := false
 	go func() {
 		// Timeout the session to prevent got stuck
-		time.Sleep(timeout)
+		time.Sleep(sessionTimeout)
 		isTimeout = true
 		session.Close()
 	}()
