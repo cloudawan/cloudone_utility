@@ -32,9 +32,13 @@ func GetInsecureHTTPSClient() *http.Client {
 	// Skip the server side certificate checking
 	if insecureHTTPSClient == nil {
 		transport := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
 		}
-		insecureHTTPSClient = &http.Client{Transport: transport}
+		insecureHTTPSClient = &http.Client{
+			Transport: transport,
+		}
 		return insecureHTTPSClient
 	} else {
 		return insecureHTTPSClient
@@ -48,8 +52,15 @@ func HealthCheck(url string, timeout time.Duration) (returnedResult bool, return
 			returnedError = err.(error)
 		}
 	}()
-
-	insecureHTTPSClient := &http.Client{Timeout: timeout}
+	transport := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+	insecureHTTPSClient := &http.Client{
+		Transport: transport,
+		Timeout:   timeout,
+	}
 
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
