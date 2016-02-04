@@ -43,6 +43,7 @@ func (cassandraClient *CassandraClient) GetSession() (returnedSession *gocql.Ses
 		if err := recover(); err != nil {
 			log.Error("GetSession Error: %s", err)
 			log.Error(logger.GetStackTrace(4096, false))
+			cassandraClient.session = nil
 			returnedSession = nil
 			returnedError = err.(error)
 		}
@@ -86,7 +87,7 @@ func (cassandraClient *CassandraClient) CloseSession() {
 	cassandraClient.session = nil
 }
 
-func (cassandraClient *CassandraClient) ReloadConfiguration() {
+func (cassandraClient *CassandraClient) ResetSession() {
 	cassandraClient.CloseSession()
 	cassandraClient.GetSession()
 }
