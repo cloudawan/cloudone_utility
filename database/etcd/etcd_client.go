@@ -17,6 +17,7 @@ package etcd
 import (
 	"github.com/cloudawan/cloudone_utility/logger"
 	"github.com/coreos/etcd/client"
+	"golang.org/x/net/context"
 	"time"
 )
 
@@ -26,10 +27,11 @@ type EtcdClient struct {
 	KeysAPI                     client.KeysAPI
 	EtcdEndpoints               []string
 	EtcdHeaderTimeoutPerRequest time.Duration
+	EtcdBasePath                string
 }
 
-func CreateEtcdClient(etcdEndpoints []string, etcdHeaderTimeoutPerRequest time.Duration) *EtcdClient {
-	etcdClient := &EtcdClient{nil, etcdEndpoints, etcdHeaderTimeoutPerRequest}
+func CreateEtcdClient(etcdEndpoints []string, etcdHeaderTimeoutPerRequest time.Duration, etcdBasePath string) *EtcdClient {
+	etcdClient := &EtcdClient{nil, etcdEndpoints, etcdHeaderTimeoutPerRequest, etcdBasePath}
 	etcdClient.GetKeysAPI()
 	return etcdClient
 }
@@ -64,4 +66,28 @@ func (etcdClient *EtcdClient) GetKeysAPI() (returnedKeysAPI client.KeysAPI, retu
 		etcdClient.KeysAPI = keysAPI
 		return keysAPI, nil
 	}
+}
+
+func (etcdClient *EtcdClient) CreateDirectoryIfNotExist(key string) error {
+	keysAPI, err := etcdClient.GetKeysAPI()
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	_, err = keysAPI.Get(context.Background(), key, nil)
+	errorData, ok := err.(client.Error)
+	if ok == false {
+		log.Error("Fail to convert error: %v", err)
+		return err
+	}
+	// Not existing, create the directory
+	if errorData.Code == client.ErrorCodeKeyNotFound {
+		_, err = keysAPI.Set(context.Background(), key, "", &client.SetOptions{Dir: true})
+		if err != nil {
+			log.Error(err)
+			return err
+		}
+	}
+	return nil
 }
