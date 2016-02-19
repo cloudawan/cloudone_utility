@@ -150,12 +150,12 @@ func RequestGet(url string, useJsonNumberInsteadFloat64ForResultJson bool) (inte
 	statusCode, jsonMap, err := Request("GET", url, nil, useJsonNumberInsteadFloat64ForResultJson)
 	if err != nil {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url + " error: " + err.Error())
+			" jsonMap: " + fmt.Sprintf("%v", jsonMap) + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 204 {
 		return jsonMap, nil
 	} else {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url)
+			" jsonMap: " + fmt.Sprintf("%v", jsonMap) + " url: " + url)
 	}
 }
 
@@ -163,12 +163,12 @@ func RequestPost(url string, body interface{}, useJsonNumberInsteadFloat64ForRes
 	statusCode, jsonMap, err := Request("POST", url, body, useJsonNumberInsteadFloat64ForResultJson)
 	if err != nil {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url + " error: " + err.Error())
+			" jsonMap: " + fmt.Sprintf("%v", jsonMap) + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 201 || statusCode == 202 {
 		return jsonMap, nil
 	} else {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url)
+			" jsonMap: " + fmt.Sprintf("%v", jsonMap) + " url: " + url)
 	}
 }
 
@@ -176,12 +176,12 @@ func RequestPut(url string, body interface{}, useJsonNumberInsteadFloat64ForResu
 	statusCode, jsonMap, err := Request("PUT", url, body, useJsonNumberInsteadFloat64ForResultJson)
 	if err != nil {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url + " error: " + err.Error())
+			" jsonMap: " + fmt.Sprintf("%v", jsonMap) + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 202 || statusCode == 204 {
 		return jsonMap, nil
 	} else {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url)
+			" jsonMap: " + fmt.Sprintf("%v", jsonMap) + " url: " + url)
 	}
 }
 
@@ -189,12 +189,12 @@ func RequestDelete(url string, body interface{}, useJsonNumberInsteadFloat64ForR
 	statusCode, jsonMap, err := Request("DELETE", url, body, useJsonNumberInsteadFloat64ForResultJson)
 	if err != nil {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url + " error: " + err.Error())
+			" jsonMap: " + fmt.Sprintf("%v", jsonMap) + " url: " + url + " error: " + err.Error())
 	} else if statusCode == 200 || statusCode == 202 || statusCode == 204 {
 		return jsonMap, nil
 	} else {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
-			" jsonMap: " + fmt.Sprintf("%s", jsonMap) + " url: " + url)
+			" jsonMap: " + fmt.Sprintf("%v", jsonMap) + " url: " + url)
 	}
 }
 
