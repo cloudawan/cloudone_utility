@@ -76,18 +76,23 @@ func (etcdClient *EtcdClient) CreateDirectoryIfNotExist(key string) error {
 	}
 
 	_, err = keysAPI.Get(context.Background(), key, nil)
-	errorData, ok := err.(client.Error)
-	if ok == false {
-		log.Error("Fail to convert error: %v", err)
-		return err
-	}
-	// Not existing, create the directory
-	if errorData.Code == client.ErrorCodeKeyNotFound {
-		_, err = keysAPI.Set(context.Background(), key, "", &client.SetOptions{Dir: true})
-		if err != nil {
-			log.Error(err)
+	if err == nil {
+		// Already exist
+		return nil
+	} else {
+		errorData, ok := err.(client.Error)
+		if ok == false {
+			log.Error("Fail to convert error: %v", err)
 			return err
 		}
+		// Not existing, create the directory
+		if errorData.Code == client.ErrorCodeKeyNotFound {
+			_, err = keysAPI.Set(context.Background(), key, "", &client.SetOptions{Dir: true})
+			if err != nil {
+				log.Error(err)
+				return err
+			}
+		}
+		return nil
 	}
-	return nil
 }
