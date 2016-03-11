@@ -17,6 +17,7 @@ package sshclient
 import (
 	"bytes"
 	"errors"
+	"github.com/cloudawan/cloudone_utility/ioutility"
 	"golang.org/x/crypto/ssh"
 	"io"
 	"net"
@@ -157,10 +158,9 @@ func shell(w io.Writer, r io.Reader, e io.Reader, interactiveMap map[string]stri
 
 	// Handle responsed error
 	go func() {
-		buf := make([]byte, 1024*64)
 		for {
-			n, err := e.Read(buf)
-			if err != nil && err.Error() == "EOF" {
+			text, _, err := ioutility.ReadText(e, 1024*64)
+			if err == io.EOF {
 				close(errorChannel)
 				return
 			} else if err != nil {
@@ -170,18 +170,19 @@ func shell(w io.Writer, r io.Reader, e io.Reader, interactiveMap map[string]stri
 			}
 
 			// Upon receiveing from stderr, send to error
-			errorChannel <- string(buf[:n])
+			errorChannel <- text
 		}
 	}()
 
 	// Handle responsed output
 	go func() {
-		buf := make([]byte, 1024*64)
+		buffer := bytes.Buffer{}
 		length := 0
 		for {
-			n, err := r.Read(buf[length:])
-			if err != nil && err.Error() == "EOF" {
-				outputChannel <- string(buf[:length])
+			text, n, err := ioutility.ReadText(r, 16)
+			if err == io.EOF {
+				buffer.WriteString(text)
+				outputChannel <- buffer.String()
 				close(outputChannel)
 				return
 			} else if err != nil {
@@ -191,9 +192,8 @@ func shell(w io.Writer, r io.Reader, e io.Reader, interactiveMap map[string]stri
 			}
 
 			interactive := false
-			currentResponse := string(buf[length:])
 			for key, value := range interactiveMap {
-				if strings.Contains(currentResponse, key) {
+				if strings.Contains(text, key) {
 					w.Write([]byte(value))
 					interactive = true
 					break
@@ -204,13 +204,24 @@ func shell(w io.Writer, r io.Reader, e io.Reader, interactiveMap map[string]stri
 				// Ignore the response for output
 			} else {
 				length += n
+
+				_, err := buffer.WriteString(text)
+				if err != nil {
+					outputChannel <- err.Error()
+					close(outputChannel)
+					return
+				}
 			}
 
 			// Keep buffing until the end of this interactive command.
 			// $ is the terminal symbol where is used to tell user to enter next command.
+			buf := buffer.Bytes()
+
 			if length-2 > 0 && buf[length-2] == '$' {
-				outputChannel <- string(buf[:length-n])
+				text := string(buf[:length])
+				outputChannel <- text
 				length = 0
+				buffer.Reset()
 				waitGroup.Done()
 			}
 		}
