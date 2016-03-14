@@ -14,13 +14,14 @@
 
 package sshclient
 
+/*
 import (
 	"fmt"
 	"testing"
 	"time"
 )
 
-func TestRequestGet(t *testing.T) {
+func TestInteractiveSSH(t *testing.T) {
 	commandSlice := make([]string, 0)
 	commandSlice = append(commandSlice, "sudo pwd\n")
 	commandSlice = append(commandSlice, "sudo gluster --mode=script volume info\n")
@@ -28,7 +29,8 @@ func TestRequestGet(t *testing.T) {
 	// commandSlice = append(commandSlice, "sudo gluster volume create test replica 2 192.168.0.25:/data/glusterfs/test 192.168.0.26:/data/glusterfs/test force\n")
 	interactiveMap := make(map[string]string)
 	interactiveMap["[sudo]"] = "cloud4win\n"
-	resultSlice, err := InteractiveSSH(1*time.Second, 3*time.Second, "192.168.0.31", 22, "cloudawan", "cloud4win", commandSlice, interactiveMap)
+	resultSlice, err := InteractiveSSH(1*time.Second, 10*time.Second, "192.168.0.31", 22, "cloudawan", "cloud4win", commandSlice, interactiveMap)
 	fmt.Println(resultSlice)
 	fmt.Println(err)
 }
+*/

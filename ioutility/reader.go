@@ -18,7 +18,9 @@ import (
 	"io"
 )
 
-// Read from stream, keep reading until no data. However, EOF is not read and is a signal to close the input stream
+// Read from stream, keep reading until no data. However, EOF is not a end of this reading but a signal to close the input stream
+// bufferSize should not be too small since it will keep waiting for stream if the last data size is the same as bufferSize
+// EOF could not be used to recognize the end of the data since it is used for pipe disconnected
 func ReadText(reader io.Reader, bufferSize int) (string, int, error) {
 	buffer := make([]byte, bufferSize)
 

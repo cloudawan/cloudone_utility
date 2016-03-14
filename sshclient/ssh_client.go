@@ -179,7 +179,7 @@ func shell(w io.Writer, r io.Reader, e io.Reader, interactiveMap map[string]stri
 		buffer := bytes.Buffer{}
 		length := 0
 		for {
-			text, n, err := ioutility.ReadText(r, 16)
+			text, n, err := ioutility.ReadText(r, 1024*16)
 			if err == io.EOF {
 				buffer.WriteString(text)
 				outputChannel <- buffer.String()
@@ -204,7 +204,6 @@ func shell(w io.Writer, r io.Reader, e io.Reader, interactiveMap map[string]stri
 				// Ignore the response for output
 			} else {
 				length += n
-
 				_, err := buffer.WriteString(text)
 				if err != nil {
 					outputChannel <- err.Error()
