@@ -80,7 +80,7 @@ func HealthCheck(url string, timeout time.Duration) (returnedResult bool, return
 	}
 }
 
-func Request(method string, url string, body interface{},
+func Request(method string, url string, body interface{}, headerMap map[string]string,
 	useJsonNumberInsteadFloat64ForResultJson bool) (returnedStatusCode int,
 	returnedJsonMapOrJsonSlice interface{}, returnedError error) {
 	defer func() {
@@ -101,6 +101,10 @@ func Request(method string, url string, body interface{},
 		} else {
 			request, err = http.NewRequest(method, url, bytes.NewReader(byteSlice))
 			request.Header.Add("Content-Type", "application/json")
+		}
+
+		for key, value := range headerMap {
+			request.Header.Add(key, value)
 		}
 
 		if err != nil {
@@ -146,8 +150,8 @@ func Request(method string, url string, body interface{},
 	}
 }
 
-func RequestGet(url string, useJsonNumberInsteadFloat64ForResultJson bool) (interface{}, error) {
-	statusCode, jsonMap, err := Request("GET", url, nil, useJsonNumberInsteadFloat64ForResultJson)
+func RequestGet(url string, headerMap map[string]string, useJsonNumberInsteadFloat64ForResultJson bool) (interface{}, error) {
+	statusCode, jsonMap, err := Request("GET", url, nil, headerMap, useJsonNumberInsteadFloat64ForResultJson)
 	if err != nil {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
 			" jsonMap: " + fmt.Sprintf("%v", jsonMap) + " url: " + url + " error: " + err.Error())
@@ -159,8 +163,8 @@ func RequestGet(url string, useJsonNumberInsteadFloat64ForResultJson bool) (inte
 	}
 }
 
-func RequestPost(url string, body interface{}, useJsonNumberInsteadFloat64ForResultJson bool) (interface{}, error) {
-	statusCode, jsonMap, err := Request("POST", url, body, useJsonNumberInsteadFloat64ForResultJson)
+func RequestPost(url string, body interface{}, headerMap map[string]string, useJsonNumberInsteadFloat64ForResultJson bool) (interface{}, error) {
+	statusCode, jsonMap, err := Request("POST", url, body, headerMap, useJsonNumberInsteadFloat64ForResultJson)
 	if err != nil {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
 			" jsonMap: " + fmt.Sprintf("%v", jsonMap) + " url: " + url + " error: " + err.Error())
@@ -172,8 +176,8 @@ func RequestPost(url string, body interface{}, useJsonNumberInsteadFloat64ForRes
 	}
 }
 
-func RequestPut(url string, body interface{}, useJsonNumberInsteadFloat64ForResultJson bool) (interface{}, error) {
-	statusCode, jsonMap, err := Request("PUT", url, body, useJsonNumberInsteadFloat64ForResultJson)
+func RequestPut(url string, body interface{}, headerMap map[string]string, useJsonNumberInsteadFloat64ForResultJson bool) (interface{}, error) {
+	statusCode, jsonMap, err := Request("PUT", url, body, headerMap, useJsonNumberInsteadFloat64ForResultJson)
 	if err != nil {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
 			" jsonMap: " + fmt.Sprintf("%v", jsonMap) + " url: " + url + " error: " + err.Error())
@@ -185,8 +189,8 @@ func RequestPut(url string, body interface{}, useJsonNumberInsteadFloat64ForResu
 	}
 }
 
-func RequestDelete(url string, body interface{}, useJsonNumberInsteadFloat64ForResultJson bool) (interface{}, error) {
-	statusCode, jsonMap, err := Request("DELETE", url, body, useJsonNumberInsteadFloat64ForResultJson)
+func RequestDelete(url string, body interface{}, headerMap map[string]string, useJsonNumberInsteadFloat64ForResultJson bool) (interface{}, error) {
+	statusCode, jsonMap, err := Request("DELETE", url, body, headerMap, useJsonNumberInsteadFloat64ForResultJson)
 	if err != nil {
 		return jsonMap, errors.New("Status code: " + strconv.Itoa(statusCode) +
 			" jsonMap: " + fmt.Sprintf("%v", jsonMap) + " url: " + url + " error: " + err.Error())
@@ -198,7 +202,7 @@ func RequestDelete(url string, body interface{}, useJsonNumberInsteadFloat64ForR
 	}
 }
 
-func RequestWithStructure(method string, url string, body interface{}, returnedStrucutre interface{}) (returnedStatusCode int, returnedDataStrucutre interface{}, returnedError error, returnedResponseBody *string) {
+func RequestWithStructure(method string, url string, body interface{}, returnedStrucutre interface{}, headerMap map[string]string) (returnedStatusCode int, returnedDataStrucutre interface{}, returnedError error, returnedResponseBody *string) {
 	defer func() {
 		if err := recover(); err != nil {
 			returnedStatusCode = 500
@@ -218,6 +222,11 @@ func RequestWithStructure(method string, url string, body interface{}, returnedS
 	} else {
 		request, err := http.NewRequest(method, url, bytes.NewReader(byteSlice))
 		request.Header.Add("Content-Type", "application/json")
+
+		for key, value := range headerMap {
+			request.Header.Add(key, value)
+		}
+
 		if err != nil {
 			return 500, nil, err, nil
 		} else {
@@ -252,8 +261,8 @@ func RequestWithStructure(method string, url string, body interface{}, returnedS
 	}
 }
 
-func RequestGetWithStructure(url string, returnedStrucutre interface{}) (interface{}, error) {
-	statusCode, data, err, responseBody := RequestWithStructure("GET", url, nil, returnedStrucutre)
+func RequestGetWithStructure(url string, returnedStrucutre interface{}, headerMap map[string]string) (interface{}, error) {
+	statusCode, data, err, responseBody := RequestWithStructure("GET", url, nil, returnedStrucutre, headerMap)
 	if err != nil {
 		body := ""
 		if responseBody != nil {
@@ -273,8 +282,8 @@ func RequestGetWithStructure(url string, returnedStrucutre interface{}) (interfa
 	}
 }
 
-func RequestPostWithStructure(url string, body interface{}, returnedStrucutre interface{}) (interface{}, error) {
-	statusCode, data, err, responseBody := RequestWithStructure("POST", url, body, returnedStrucutre)
+func RequestPostWithStructure(url string, body interface{}, returnedStrucutre interface{}, headerMap map[string]string) (interface{}, error) {
+	statusCode, data, err, responseBody := RequestWithStructure("POST", url, body, returnedStrucutre, headerMap)
 	if err != nil {
 		body := ""
 		if responseBody != nil {
@@ -294,8 +303,8 @@ func RequestPostWithStructure(url string, body interface{}, returnedStrucutre in
 	}
 }
 
-func RequestPutWithStructure(url string, body interface{}, returnedStrucutre interface{}) (interface{}, error) {
-	statusCode, data, err, responseBody := RequestWithStructure("PUT", url, body, returnedStrucutre)
+func RequestPutWithStructure(url string, body interface{}, returnedStrucutre interface{}, headerMap map[string]string) (interface{}, error) {
+	statusCode, data, err, responseBody := RequestWithStructure("PUT", url, body, returnedStrucutre, headerMap)
 	if err != nil {
 		body := ""
 		if responseBody != nil {
@@ -315,8 +324,8 @@ func RequestPutWithStructure(url string, body interface{}, returnedStrucutre int
 	}
 }
 
-func RequestDeleteWithStructure(url string, body interface{}, returnedStrucutre interface{}) (interface{}, error) {
-	statusCode, data, err, responseBody := RequestWithStructure("DELETE", url, body, returnedStrucutre)
+func RequestDeleteWithStructure(url string, body interface{}, returnedStrucutre interface{}, headerMap map[string]string) (interface{}, error) {
+	statusCode, data, err, responseBody := RequestWithStructure("DELETE", url, body, returnedStrucutre, headerMap)
 	if err != nil {
 		body := ""
 		if responseBody != nil {
@@ -336,7 +345,7 @@ func RequestDeleteWithStructure(url string, body interface{}, returnedStrucutre 
 	}
 }
 
-func RequestByteSliceResult(method string, url string, body map[string]interface{}) (returnedStatusCode int, returnedByteSlice []byte, returnedError error) {
+func RequestByteSliceResult(method string, url string, body map[string]interface{}, headerMap map[string]string) (returnedStatusCode int, returnedByteSlice []byte, returnedError error) {
 	defer func() {
 		if err := recover(); err != nil {
 			returnedStatusCode = 500
@@ -351,6 +360,11 @@ func RequestByteSliceResult(method string, url string, body map[string]interface
 	} else {
 		request, err := http.NewRequest(method, url, bytes.NewReader(byteSlice))
 		request.Header.Add("Content-Type", "application/json")
+
+		for key, value := range headerMap {
+			request.Header.Add(key, value)
+		}
+
 		if err != nil {
 			return 500, nil, err
 		} else {
@@ -373,8 +387,8 @@ func RequestByteSliceResult(method string, url string, body map[string]interface
 	}
 }
 
-func RequestGetByteSliceResult(url string) ([]byte, error) {
-	statusCode, byteSlice, err := RequestByteSliceResult("GET", url, nil)
+func RequestGetByteSliceResult(url string, headerMap map[string]string) ([]byte, error) {
+	statusCode, byteSlice, err := RequestByteSliceResult("GET", url, nil, headerMap)
 	if err != nil {
 		return byteSlice, errors.New("Status code: " + strconv.Itoa(statusCode) +
 			" byteSlice: " + fmt.Sprintf("%s", byteSlice) + " url: " + url + " error: " + err.Error())
@@ -386,8 +400,8 @@ func RequestGetByteSliceResult(url string) ([]byte, error) {
 	}
 }
 
-func RequestPostByteSliceResult(url string, body map[string]interface{}) ([]byte, error) {
-	statusCode, byteSlice, err := RequestByteSliceResult("POST", url, body)
+func RequestPostByteSliceResult(url string, body map[string]interface{}, headerMap map[string]string) ([]byte, error) {
+	statusCode, byteSlice, err := RequestByteSliceResult("POST", url, body, headerMap)
 	if err != nil {
 		return byteSlice, errors.New("Status code: " + strconv.Itoa(statusCode) +
 			" byteSlice: " + fmt.Sprintf("%s", byteSlice) + " url: " + url + " error: " + err.Error())
@@ -399,8 +413,8 @@ func RequestPostByteSliceResult(url string, body map[string]interface{}) ([]byte
 	}
 }
 
-func RequestPutByteSliceResult(url string, body map[string]interface{}) ([]byte, error) {
-	statusCode, byteSlice, err := RequestByteSliceResult("PUT", url, body)
+func RequestPutByteSliceResult(url string, body map[string]interface{}, headerMap map[string]string) ([]byte, error) {
+	statusCode, byteSlice, err := RequestByteSliceResult("PUT", url, body, headerMap)
 	if err != nil {
 		return byteSlice, errors.New("Status code: " + strconv.Itoa(statusCode) +
 			" byteSlice: " + fmt.Sprintf("%s", byteSlice) + " url: " + url + " error: " + err.Error())
@@ -412,8 +426,8 @@ func RequestPutByteSliceResult(url string, body map[string]interface{}) ([]byte,
 	}
 }
 
-func RequestDeleteByteSliceResult(url string, body map[string]interface{}) ([]byte, error) {
-	statusCode, byteSlice, err := RequestByteSliceResult("DELETE", url, body)
+func RequestDeleteByteSliceResult(url string, body map[string]interface{}, headerMap map[string]string) ([]byte, error) {
+	statusCode, byteSlice, err := RequestByteSliceResult("DELETE", url, body, headerMap)
 	if err != nil {
 		return byteSlice, errors.New("Status code: " + strconv.Itoa(statusCode) +
 			" byteSlice: " + fmt.Sprintf("%s", byteSlice) + " url: " + url + " error: " + err.Error())
