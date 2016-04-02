@@ -69,3 +69,37 @@ func (user *User) HasResource(component string, path string) bool {
 
 	return false
 }
+
+func (user *User) CopyPartialUserDataForComponent(component string) *User {
+	newUser := &User{}
+	newUser.Name = user.Name
+	newUser.EncodedPassword = "******"
+	newUser.RoleSlice = make([]*Role, 0)
+	newUser.ResourceSlice = make([]*Resource, 0)
+	newUser.Description = user.Description
+
+	for _, resource := range user.ResourceSlice {
+		if resource.Component == "*" || resource.Component == component {
+			newUser.ResourceSlice = append(newUser.ResourceSlice, resource)
+		}
+	}
+
+	for _, role := range user.RoleSlice {
+		newRole := &Role{}
+		newRole.Name = role.Name
+		newRole.PermissionSlice = make([]*Permission, 0)
+		newRole.description = role.description
+
+		for _, permission := range role.PermissionSlice {
+			if permission.Component == "*" || permission.Component == component {
+				newRole.PermissionSlice = append(newRole.PermissionSlice, permission)
+			}
+		}
+
+		if len(newRole.PermissionSlice) > 0 {
+			newUser.RoleSlice = append(newUser.RoleSlice, newRole)
+		}
+	}
+
+	return newUser
+}
