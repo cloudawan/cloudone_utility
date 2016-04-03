@@ -54,7 +54,7 @@ func GetResourceName(component string, path string) (string, error) {
 
 func (resource *Resource) HasResource(component string, path string) bool {
 	// * means all
-	if component == "*" {
+	if resource.Component == "*" {
 		return true
 	} else if resource.Component == component {
 		// * means all
