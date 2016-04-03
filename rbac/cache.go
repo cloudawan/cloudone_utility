@@ -56,3 +56,13 @@ func CheckCacheTimeout() {
 		}
 	}
 }
+
+func GetAllTokenExpiredTime() map[string]time.Time {
+	expiredMap := make(map[string]time.Time)
+
+	for key, value := range cacheMap {
+		expiredMap[key] = value.ExpiredTime
+	}
+
+	return expiredMap
+}
