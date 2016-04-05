@@ -60,13 +60,24 @@ func (user *User) HasPermission(component string, method string, path string) bo
 	return false
 }
 
+// Check whether user has the target permission node or child permission node of the target permission node along the tree.
+// This doesn't mean user has permission to access the parent permission node in the tree but just is able to bypass the parent permission node in order to go down to the target child permission node in the tree.
+func (user *User) HasChildPermission(component string, method string, path string) bool {
+	for _, role := range user.RoleSlice {
+		if role.HasChildPermission(component, method, path) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (user *User) HasResource(component string, path string) bool {
 	for _, resource := range user.ResourceSlice {
 		if resource.HasResource(component, path) {
 			return true
 		}
 	}
-
 	return false
 }
 

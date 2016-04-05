@@ -31,3 +31,14 @@ func (role *Role) HasPermission(component string, method string, path string) bo
 
 	return false
 }
+
+// Check whether user has the target permission node or child permission node of the target permission node along the tree
+func (role *Role) HasChildPermission(component string, method string, path string) bool {
+	for _, permission := range role.PermissionSlice {
+		if permission.HasChildPermission(component, method, path) {
+			return true
+		}
+	}
+
+	return false
+}

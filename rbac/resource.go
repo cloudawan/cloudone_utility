@@ -58,10 +58,10 @@ func (resource *Resource) HasResource(component string, path string) bool {
 		return true
 	} else if resource.Component == component {
 		// * means all
-		if path == "*" {
+		if resource.Path == "*" {
 			return true
 			// Prefix for hierarchy authorization
-		} else if strings.HasPrefix(resource.Path, path) {
+		} else if strings.HasPrefix(path, resource.Path) {
 			return true
 		} else {
 			return false

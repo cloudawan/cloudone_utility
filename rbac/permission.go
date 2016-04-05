@@ -70,11 +70,43 @@ func (permission *Permission) HasPermission(component string, method string, pat
 	} else if permission.Component == component {
 		// * means all
 		if permission.Method == "*" {
-			// Prefix for hierarchy authorization
-			return strings.HasPrefix(path, permission.Path)
+			// * means all
+			if permission.Path == "*" {
+				return true
+			} else {
+				// Prefix for hierarchy authorization
+				return strings.HasPrefix(path, permission.Path)
+			}
 		} else if permission.Method == method {
-			// Prefix for hierarchy authorization
-			return strings.HasPrefix(path, permission.Path)
+			// * means all
+			if permission.Path == "*" {
+				return true
+			} else {
+				// Prefix for hierarchy authorization
+				return strings.HasPrefix(path, permission.Path)
+			}
+		} else {
+			// Different method won't apply path hierarchy authorization
+			return false
+		}
+	} else {
+		return false
+	}
+}
+
+// Check whether user has the target permission node or child permission node of the target permission node along the tree
+func (permission *Permission) HasChildPermission(component string, method string, path string) bool {
+	// * means all
+	if permission.Component == "*" {
+		return true
+	} else if permission.Component == component {
+		// * means all
+		if permission.Method == "*" {
+			// Prefix for hierarchy authorization. Unlike HasPermission, here it check whether target permission is the same or the child of the permissions owned
+			return strings.HasPrefix(permission.Path, path)
+		} else if permission.Method == method {
+			// Prefix for hierarchy authorization. Unlike HasPermission, here it check whether target permission is the same or the child of the permissions owned
+			return strings.HasPrefix(permission.Path, path)
 		} else {
 			// Different method won't apply path hierarchy authorization
 			return false
