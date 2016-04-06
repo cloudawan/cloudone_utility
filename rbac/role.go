@@ -19,7 +19,7 @@ import ()
 type Role struct {
 	Name            string
 	PermissionSlice []*Permission
-	description     string
+	Description     string
 }
 
 func (role *Role) HasPermission(component string, method string, path string) bool {

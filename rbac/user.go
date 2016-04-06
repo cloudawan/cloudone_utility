@@ -99,7 +99,7 @@ func (user *User) CopyPartialUserDataForComponent(component string) *User {
 		newRole := &Role{}
 		newRole.Name = role.Name
 		newRole.PermissionSlice = make([]*Permission, 0)
-		newRole.description = role.description
+		newRole.Description = role.Description
 
 		for _, permission := range role.PermissionSlice {
 			if permission.Component == "*" || permission.Component == component {
