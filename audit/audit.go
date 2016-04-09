@@ -15,6 +15,7 @@
 package audit
 
 import (
+	"strings"
 	"time"
 )
 
@@ -23,6 +24,8 @@ type AuditLog struct {
 	Kind              string
 	Path              string
 	UserName          string
+	RemoteAddress     string
+	RemoteHost        string
 	CreatedTime       time.Time
 	QueryParameterMap map[string][]string
 	PathParameterMap  map[string]string
@@ -39,15 +42,23 @@ func AddDescription(methodAndPath string, description string) {
 	descriptionMap[methodAndPath] = description
 }
 
-func CreateAuditLog(component string, path string, userName string,
+func CreateAuditLog(component string, path string, userName string, remoteAddress string,
 	queryParameterMap map[string][]string, pathParameterMap map[string]string,
 	requestMethod string, requestURI string, requestBody string, requestHeader map[string][]string) *AuditLog {
+
+	splitSlice := strings.Split(remoteAddress, ":")
+	remoteHost := ""
+	if len(splitSlice) > 0 {
+		remoteHost = splitSlice[0]
+	}
 
 	return &AuditLog{
 		component,
 		getKind(requestMethod, path),
 		path,
 		userName,
+		remoteAddress,
+		remoteHost,
 		time.Now(),
 		queryParameterMap,
 		pathParameterMap,
