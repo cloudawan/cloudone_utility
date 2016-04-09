@@ -15,7 +15,7 @@
 package rbac
 
 import (
-	"github.com/cloudawan/cloudone/utility/logger"
+	"github.com/cloudawan/cloudone_utility/logger"
 )
 
-var log = logger.GetLogManager().GetLogger("rbac")
+var log = logger.GetLog("rbac")
