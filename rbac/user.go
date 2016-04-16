@@ -25,15 +25,17 @@ type User struct {
 	RoleSlice       []*Role
 	ResourceSlice   []*Resource
 	Description     string
+	MetaDataMap     map[string]string // Used to store user's data which doesn't need to check password
 }
 
-func CreateUser(name string, password string, roleSlice []*Role, resourceSlice []*Resource, description string) *User {
+func CreateUser(name string, password string, roleSlice []*Role, resourceSlice []*Resource, description string, metaDataMap map[string]string) *User {
 	return &User{
 		name,
 		encodePassword(password),
 		roleSlice,
 		resourceSlice,
 		description,
+		metaDataMap,
 	}
 }
 
@@ -88,6 +90,7 @@ func (user *User) CopyPartialUserDataForComponent(component string) *User {
 	newUser.RoleSlice = make([]*Role, 0)
 	newUser.ResourceSlice = make([]*Resource, 0)
 	newUser.Description = user.Description
+	newUser.MetaDataMap = user.MetaDataMap
 
 	for _, resource := range user.ResourceSlice {
 		if resource.Component == "*" || resource.Component == component {
