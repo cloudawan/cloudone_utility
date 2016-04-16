@@ -17,6 +17,7 @@ package rbac
 import (
 	"encoding/hex"
 	"golang.org/x/crypto/sha3"
+	"time"
 )
 
 type User struct {
@@ -26,9 +27,11 @@ type User struct {
 	ResourceSlice   []*Resource
 	Description     string
 	MetaDataMap     map[string]string // Used to store user's data which doesn't need to check password
+	ExpiredTime     *time.Time
+	Disabled        bool
 }
 
-func CreateUser(name string, password string, roleSlice []*Role, resourceSlice []*Resource, description string, metaDataMap map[string]string) *User {
+func CreateUser(name string, password string, roleSlice []*Role, resourceSlice []*Resource, description string, metaDataMap map[string]string, expiredTime *time.Time, disabled bool) *User {
 	return &User{
 		name,
 		encodePassword(password),
@@ -36,6 +39,8 @@ func CreateUser(name string, password string, roleSlice []*Role, resourceSlice [
 		resourceSlice,
 		description,
 		metaDataMap,
+		expiredTime,
+		disabled,
 	}
 }
 
