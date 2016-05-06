@@ -242,18 +242,13 @@ func RequestWithStructure(method string, url string, body interface{}, returnedS
 				if err != nil {
 					return 500, nil, err, nil
 				} else {
-					if response.StatusCode == 404 {
+					err := json.Unmarshal(responseBody, &returnedStrucutre)
+					if err != nil {
 						responseBodyText := string(responseBody)
-						return 404, nil, nil, &responseBodyText
+						return response.StatusCode, nil, err, &responseBodyText
 					} else {
-						err := json.Unmarshal(responseBody, &returnedStrucutre)
-						if err != nil {
-							responseBodyText := string(responseBody)
-							return response.StatusCode, nil, err, &responseBodyText
-						} else {
-							responseBodyText := string(responseBody)
-							return response.StatusCode, returnedStrucutre, nil, &responseBodyText
-						}
+						responseBodyText := string(responseBody)
+						return response.StatusCode, returnedStrucutre, nil, &responseBodyText
 					}
 				}
 			}
