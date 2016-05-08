@@ -55,10 +55,6 @@ func GetPermissionName(component string, method string, path string) (string, er
 		log.Error("Path couldn't be empty")
 		return "", errors.New("Path couldn't be empty")
 	}
-	if strings.Contains(path, "/") == false {
-		log.Error("Path format is invalid")
-		return "", errors.New("Path format is invalid")
-	}
 
 	return hex.EncodeToString([]byte(component + " " + method + " " + path)), nil
 }
