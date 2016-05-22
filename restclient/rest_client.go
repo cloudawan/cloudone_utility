@@ -42,7 +42,7 @@ func GetInsecureHTTPSClient() *http.Client {
 	}
 }
 
-func HealthCheck(url string, timeout time.Duration) (returnedResult bool, returnedError error) {
+func HealthCheck(url string, headerMap map[string]string, timeout time.Duration) (returnedResult bool, returnedError error) {
 	defer func() {
 		if err := recover(); err != nil {
 			returnedResult = false
@@ -62,6 +62,10 @@ func HealthCheck(url string, timeout time.Duration) (returnedResult bool, return
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return false, err
+	}
+
+	for key, value := range headerMap {
+		request.Header.Add(key, value)
 	}
 
 	response, err := insecureHTTPSClient.Do(request)
