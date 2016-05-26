@@ -44,6 +44,10 @@ func CreateConfiguration(programName string, configurationContent string) (*Conf
 	return configuration, nil
 }
 
+func (configuration *Configuration) SetNative(key string, value interface{}) {
+	configuration.jsonMap[key] = value
+}
+
 func (configuration *Configuration) GetNative(key string) interface{} {
 	return configuration.jsonMap[key]
 }
