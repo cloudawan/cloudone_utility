@@ -24,12 +24,9 @@ import (
 func TestSSHProxy(t *testing.T) {
 	interactiveMap := make(map[string]string)
 	interactiveMap["[sudo]"] = "cloud4win\n"
-	sshCommandProxy := CreateSSHCommandProxy(1*time.Second, 10*time.Minute, "192.168.0.31", 22, "cloudawan", "cloud4win", interactiveMap)
+	sshCommandProxy := CreateSSHCommandProxy(1*time.Second, "127.0.0.1", 22, "ycchang", "cloud4win", 800, 600, interactiveMap)
 
-	err := sshCommandProxy.Connect()
-	fmt.Println(err)
-
-	inputChannel, outputChannel, _, err := sshCommandProxy.GetChannels()
+	inputChannel, outputChannel, _, err := sshCommandProxy.Connect()
 	fmt.Println(err)
 
 	inputChannel <- "sudo pwd\n"
